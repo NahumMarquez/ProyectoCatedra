@@ -7,5 +7,7 @@ namespace ProyectoCatedra.Models
         public int Id { get; set; }
         public string Usuario { get; set; }
         public string Contraseña { get; set; }
+        public string correo { get; set; }
+        public string rol { get; set; }
     }
 }
