@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProyectoCatedra.Db;
 
@@ -11,9 +12,11 @@ using ProyectoCatedra.Db;
 namespace ProyectoCatedra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328030950_CorregirColumnas")]
+    partial class CorregirColumnas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace ProyectoCatedra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Empleados", (string)null);
+                    b.ToTable("Empleados");
                 });
 
             modelBuilder.Entity("ProyectoCatedra.Models.RecuperacionContraseña", b =>
@@ -79,7 +82,7 @@ namespace ProyectoCatedra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecuperacionContraseñas", (string)null);
+                    b.ToTable("RecuperacionContraseñas");
                 });
 #pragma warning restore 612, 618
         }

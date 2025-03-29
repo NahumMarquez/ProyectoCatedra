@@ -17,6 +17,23 @@ namespace ProyectoCatedra
 
             var app = builder.Build(); // ✅ Se llama solo una vez
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                if (!context.Empleados.Any()) // Verifica si la tabla está vacía
+                {
+                    context.Empleados.Add(new Empleados
+                    {
+                        Usuario = "JefeFarmacia",
+                        Correo = "ccabigail48@gmail.com",
+                        Contraseña = "abigail", // Considera encriptar la contraseña
+                        Rol = "jefe"
+                    });
+                    context.SaveChanges();
+                    Console.WriteLine("👤 Usuario 'admin' agregado a la base de datos.");
+                }
+            }
             // Configurar el middleware
             if (!app.Environment.IsDevelopment())
             {

@@ -10,5 +10,6 @@ namespace ProyectoCatedra.Db
         }
 
         public DbSet<Empleados> Empleados { get; set; }
+        public DbSet<RecuperacionContraseña> RecuperacionContraseñas { get; set; }
     }
 }

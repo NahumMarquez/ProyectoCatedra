@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProyectoCatedra.Db;
 
@@ -11,9 +12,11 @@ using ProyectoCatedra.Db;
 namespace ProyectoCatedra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328023138_AddRecuperacionContraseña")]
+    partial class AddRecuperacionContraseña
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,27 +35,23 @@ namespace ProyectoCatedra.Migrations
 
                     b.Property<string>("Contraseña")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("contraseña");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Correo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("correo");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Rol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("rol");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Usuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("usuario");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Empleados", (string)null);
+                    b.ToTable("Empleados");
                 });
 
             modelBuilder.Entity("ProyectoCatedra.Models.RecuperacionContraseña", b =>
@@ -65,21 +64,18 @@ namespace ProyectoCatedra.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("correo");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Expiracion")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("fecha_expiracion");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("token");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecuperacionContraseñas", (string)null);
+                    b.ToTable("RecuperacionContraseñas");
                 });
 #pragma warning restore 612, 618
         }

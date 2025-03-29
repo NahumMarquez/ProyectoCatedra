@@ -13,13 +13,18 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Contraseña</label>
-                <input type="password" class="form-control" name="Contrasena" required>
+                <input type="password" class="form-control" name="Contraseña" required>
             </div>
             @if (ViewBag.Error != null)
             {
                 <div class="text-danger text-center">@ViewBag.Error</div>
             }
             <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+
+            <!-- Enlace para recuperación de contraseña -->
+            <div class="text-center mt-2">
+                <a href="@Url.Action("Recuperar", "Cuenta")">¿Olvidaste tu contraseña?</a>
+            </div>
         </form>
     </div>
 </div>
