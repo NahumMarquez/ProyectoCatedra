@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProyectoCatedra.Db;
 
@@ -11,9 +12,11 @@ using ProyectoCatedra.Db;
 namespace ProyectoCatedra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250329221827_CrearTablaProducto")]
+    partial class CrearTablaProducto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace ProyectoCatedra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Empleados", (string)null);
+                    b.ToTable("Empleados");
                 });
 
             modelBuilder.Entity("ProyectoCatedra.Models.Producto", b =>
@@ -75,7 +78,7 @@ namespace ProyectoCatedra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Productos", (string)null);
+                    b.ToTable("Productos");
                 });
 
             modelBuilder.Entity("ProyectoCatedra.Models.RecuperacionContraseña", b =>
@@ -102,7 +105,7 @@ namespace ProyectoCatedra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecuperacionContraseñas", (string)null);
+                    b.ToTable("RecuperacionContraseñas");
                 });
 #pragma warning restore 612, 618
         }

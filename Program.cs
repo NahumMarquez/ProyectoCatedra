@@ -14,6 +14,7 @@ namespace ProyectoCatedra
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddSession();
 
             var app = builder.Build(); // ✅ Se llama solo una vez
 
@@ -44,6 +45,7 @@ namespace ProyectoCatedra
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseSession();
             app.UseAuthorization();
 
             app.MapControllerRoute(

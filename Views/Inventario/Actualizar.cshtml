@@ -1,0 +1,31 @@
+﻿@model ProyectoCatedra.Models.Producto
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Cuenta" asp-action="Inicio">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">Index</li>
+    </ol>
+</nav>
+<h2>Actualizar Producto</h2>
+<form asp-action="Actualizar" asp-controller="Inventario" method="POST">
+    <div asp-validation-summary="All" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <input type="hidden" asp-for="Id" value="@Model.Id" placeholder="Id" aria-label="Id">
+
+
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-pills"></i></span>
+        <input type="text" class="form-control" asp-for="Nombre" placeholder="Name" aria-label="Nombre">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-boxes-stacked"></i></span>
+        <input type="text" class="form-control" asp-for="Cantidad" placeholder="Cantidad" aria-label="Cantidad">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-dollar-sign"></i></span>
+        <input type="number" class="form-control" asp-for="Precio" step="0.01" placeholder="Precio" aria-label="Precio">
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
