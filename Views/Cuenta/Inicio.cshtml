@@ -1,11 +1,14 @@
-﻿@{
+@* En Views/Cuenta/Inicio.cshtml *@
+@{
     ViewData["Title"] = "Inicio";
 }
 
 <div class="container text-center mt-5">
     <h2>Bienvenido al sistema</h2>
     <p>Has iniciado sesión correctamente.</p>
-    <a class="btn btn-primary" href="@Url.Action("Index", "Inventario")">Inventario</a>
-    <a href="/Cuenta/Login" class="btn btn-danger">Cerrar Sesión</a>
+    <div class="d-flex justify-content-center gap-3">
+        <a class="btn btn-primary" href="@Url.Action("Index", "Inventario")">Inventario</a>
+        <a class="btn btn-info" href="@Url.Action("Index", "Estadisticas")">Ver Estadísticas</a>
+        <a href="/Cuenta/Login" class="btn btn-danger">Cerrar Sesión</a>
+    </div>
 </div>
-
