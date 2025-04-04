@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 namespace ProyectoCatedra.Models
 {
     public class Producto
@@ -12,6 +12,8 @@ namespace ProyectoCatedra.Models
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
         public decimal Precio { get; set; }
+
+        public int Ventas { get; set; } = 0;
 
     }
 }
