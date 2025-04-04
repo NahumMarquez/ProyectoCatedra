@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoCatedra.Db;
 using ProyectoCatedra.Models;
 using System.Linq;
@@ -57,6 +57,14 @@ namespace ProyectoCatedra.Controllers
             _context.Productos.Remove(producto);
             _context.SaveChanges();
 
+            return RedirectToAction("Index");
+        }
+
+
+        public IActionResult VenderProducto(int id, int cantidad)
+        {
+            var estadisticasController = new EstadisticasController(_context);
+            estadisticasController.RegistrarVenta(id, cantidad);
             return RedirectToAction("Index");
         }
 
