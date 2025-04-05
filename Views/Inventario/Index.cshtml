@@ -8,6 +8,19 @@
     </ol>
 </nav>
 <h2>Inventario</h2>
+@if (ViewBag.ProductosBajoStock.Count > 0)
+{
+	<div class="alert alert-warning">
+		<i class="fa-solid fa-triangle-exclamation"></i>
+		¡Atención! Algunos productos están por agotarse:
+		<ul>
+			@foreach (var producto in ViewBag.ProductosBajoStock)
+			{
+				<li>@producto.Nombre - Stock actual: @producto.Cantidad (mínimo: @producto.StockMinimo)</li>
+			}
+		</ul>
+	</div>
+}
 <a class="btn btn-success mb-3" href="@Url.Action("Agregar", "Inventario")">Agregar Producto</a>
 
 <div class="col-xl-12 col-md-12 col-sm-12 mt-3">
@@ -18,6 +31,7 @@
 				<th>Nombre</th>
 				<th>Cantidad</th>
 				<th>Precio</th>
+				<th>Stock Mínimo</th>
 				<th>Accion</th>
 			</tr>
 		</thead>
@@ -30,6 +44,7 @@
 						<td>@producto.Nombre</td>
 						<td>@producto.Cantidad</td>
 						<td>@producto.Precio</td>
+						<td>@producto.StockMinimo</td>
 						<td>
 							<div class="d-flex gap-2">
 								<a type="button" class="btn btn-warning btn-sm rounded-circle d-flex align-items-center justify-content-center"

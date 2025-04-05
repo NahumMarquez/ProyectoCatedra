@@ -1,0 +1,71 @@
+﻿﻿@{
+    ViewData["Title"] = "Estadísticas de Productos";
+}
+
+<div class="container">
+    <h2>Estadísticas de Ventas</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Productos Más Vendidos</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Ventas</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in ViewBag.MasVendidos)
+                            {
+                                <tr>
+                                    <td>@producto.Nombre</td>
+                                    <td>@producto.Ventas</td>
+                                    <td>@producto.Cantidad</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4>Productos Menos Vendidos</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Ventas</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in ViewBag.MenosVendidos)
+                            {
+                                <tr>
+                                    <td>@producto.Nombre</td>
+                                    <td>@producto.Ventas</td>
+                                    <td>@producto.Cantidad</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="@Url.Action("Inicio", "Cuenta")" class="btn btn-secondary mt-3">
+        Volver al Inicio
+    </a>
+</div>

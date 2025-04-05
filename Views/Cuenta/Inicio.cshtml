@@ -6,6 +6,11 @@
     <h2>Bienvenido al sistema</h2>
     <p>Has iniciado sesión correctamente.</p>
     <a class="btn btn-primary" href="@Url.Action("Index", "Inventario")">Inventario</a>
+    <a asp-controller="Inventario" asp-action="Informe" class="btn btn-primary">
+        Generar
+        Informe
+    </a>
+    <a class="btn btn-info" href="@Url.Action("Index", "Estadisticas")">Ver Estadísticas</a>
     <a href="/Cuenta/Login" class="btn btn-danger">Cerrar Sesión</a>
 </div>
 

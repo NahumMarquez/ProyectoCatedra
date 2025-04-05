@@ -1,0 +1,93 @@
+﻿﻿@* En Views/Estadisticas/Index.cshtml *@
+@{
+    ViewData["Title"] = "Estadísticas de Productos";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Cuenta" asp-action="Inicio">Inicio</a>
+        </li>
+        <li class="breadcrumb-item active">Estadísticas</li>
+    </ol>
+</nav>
+
+<h2>Estadísticas de Productos</h2>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Productos Más Vendidos</h4>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.MasVendidos != null && ViewBag.MasVendidos.Count > 0)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Ventas</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in ViewBag.MasVendidos)
+                            {
+                                <tr>
+                                    <td>@producto.Nombre</td>
+                                    <td>@producto.Ventas</td>
+                                    <td>@producto.Cantidad</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>No hay datos de ventas disponibles.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Productos Menos Vendidos</h4>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.MenosVendidos != null && ViewBag.MenosVendidos.Count > 0)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Ventas</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in ViewBag.MenosVendidos)
+                            {
+                                <tr>
+                                    <td>@producto.Nombre</td>
+                                    <td>@producto.Ventas</td>
+                                    <td>@producto.Cantidad</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>No hay datos de ventas disponibles.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="@Url.Action("Inicio", "Cuenta")" class="btn btn-secondary">Volver al Inicio</a>
+</div>
