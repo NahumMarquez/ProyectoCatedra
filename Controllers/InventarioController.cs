@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoCatedra.Db;
 using ProyectoCatedra.Models;
 using System.Linq;
@@ -9,8 +9,7 @@ using OfficeOpenXml;
 using iText.Kernel.Font;
 using iText.IO.Font.Constants;
 using iText.Bouncycastle;
-using OfficeOpenXml.Style; // si usas estilos más adelante
-
+using OfficeOpenXml.Style;
 
 namespace ProyectoCatedra.Controllers
 {
@@ -38,23 +37,50 @@ namespace ProyectoCatedra.Controllers
             {
                 _context.Productos.Add(producto);
                 _context.SaveChanges();
+
+                RegistrarMovimiento(producto.Id, "Entrada", producto.Cantidad, "Entrada inicial de producto");
+
                 return RedirectToAction("Index");
             }
             return View(producto);
         }
-        public IActionResult Actualizar(int id)
+
+        // Método auxiliar para registrar movimientos
+        private void RegistrarMovimiento(int productoId, string tipo, int cantidad, string comentario = "")
         {
-            var producto = _context.Productos.Find(id);
-            if (producto == null)
-                return NotFound();
-            return View(producto);
+            var movimiento = new HistorialMovimiento
+            {
+                ProductoId = productoId,
+                TipoMovimiento = tipo,
+                Cantidad = cantidad,
+                Usuario = HttpContext.Session.GetString("Usuario") ?? "Sistema",
+                Comentario = comentario
+            };
+
+            _context.HistorialMovimientos.Add(movimiento);
+            _context.SaveChanges();
         }
+
         [HttpPost]
         public IActionResult Actualizar(Producto producto)
         {
             if (ModelState.IsValid)
             {
-                _context.Productos.Update(producto);
+                var productoExistente = _context.Productos.Find(producto.Id);
+                if (productoExistente == null)
+                    return NotFound();
+
+                // Verificar si hubo cambio en la cantidad
+                if (productoExistente.Cantidad != producto.Cantidad)
+                {
+                    int diferencia = producto.Cantidad - productoExistente.Cantidad;
+                    string tipoMovimiento = diferencia > 0 ? "Ajuste (Entrada)" : "Ajuste (Salida)";
+                    string comentario = $"Ajuste de inventario. Cantidad anterior: {productoExistente.Cantidad}";
+
+                    RegistrarMovimiento(producto.Id, tipoMovimiento, Math.Abs(diferencia), comentario);
+                }
+
+                _context.Entry(productoExistente).CurrentValues.SetValues(producto);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -171,13 +197,41 @@ namespace ProyectoCatedra.Controllers
                 return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Inventario.xlsx");
             }
         }
+        [HttpGet]
         public IActionResult VenderProducto(int id, int cantidad)
         {
+            var producto = _context.Productos.Find(id);
+            if (producto == null)
+                return NotFound();
+
+            if (cantidad <= 0 || cantidad > producto.Cantidad)
+            {
+                TempData["Error"] = "Cantidad no válida";
+                return RedirectToAction("Index");
+            }
+
+            producto.Cantidad -= cantidad;
+            _context.SaveChanges();
+
+            // Registrar movimiento de salida
+            RegistrarMovimiento(id, "Salida", cantidad, "Venta de producto");
+
             var estadisticasController = new EstadisticasController(_context);
             estadisticasController.RegistrarVenta(id, cantidad);
+
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public IActionResult Actualizar(int id)
+        {
+            var producto = _context.Productos.Find(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+            return View(producto);
+        }
     }
-}
+} 
 
     
