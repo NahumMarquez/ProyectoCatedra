@@ -1,4 +1,4 @@
-﻿@model List<ProyectoCatedra.Models.Producto>
+@model List<ProyectoCatedra.Models.Producto>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -54,6 +54,11 @@
 								<a type="button" class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
 								   style="width: 40px; height: 40px;" asp-action="Eliminar" asp-controller="Inventario" asp-route-id="@producto.Id" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
 									<i class="fa-solid fa-trash"></i>
+								</a>
+								<a type="button" class="btn btn-info btn-sm rounded-circle d-flex align-items-center justify-content-center"
+								   style="width: 40px; height: 40px;" asp-action="Producto" asp-controller="Historial"
+								   asp-route-id="@producto.Id" title="Ver Historial">
+									<i class="fa-solid fa-clock-rotate-left"></i>
 								</a>
 							</div>
 						</td>
