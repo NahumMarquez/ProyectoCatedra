@@ -24,8 +24,10 @@ namespace ProyectoCatedra.Controllers
         {
             var productos = _context.Productos.ToList();
             var productosBajoStock = productos.Where(p => p.Cantidad <= 10).ToList();
+            var clientes = _context.Clientes.ToList();
 
             ViewBag.ProductosBajoStock = productosBajoStock;
+            ViewBag.Clientes = clientes;
             return View(productos);
         }
         public IActionResult Agregar() => View(new Producto());
@@ -86,6 +88,7 @@ namespace ProyectoCatedra.Controllers
             }
             return View(producto);
         }
+
         [HttpGet]
         public IActionResult Eliminar(int id)
         {
@@ -93,6 +96,11 @@ namespace ProyectoCatedra.Controllers
             if (producto == null)
                 return NotFound();
 
+            // Primero eliminar los detalles de venta asociados
+            var detalles = _context.DetalleVentas.Where(d => d.ProductoId == id).ToList();
+            _context.DetalleVentas.RemoveRange(detalles);
+
+            // Luego eliminar el producto
             _context.Productos.Remove(producto);
             _context.SaveChanges();
 
@@ -105,7 +113,7 @@ namespace ProyectoCatedra.Controllers
             var productos = _context.Productos.ToList();
             return View(productos);
         }
-        // Método para exportar el informe a PDF
+
         public IActionResult ExportarPDF()
         {
             var productos = _context.Productos.ToList();
@@ -146,6 +154,7 @@ namespace ProyectoCatedra.Controllers
                 return File(ms.ToArray(), "application/pdf", "Informe_Inventario.pdf");
             }
         }
+
         // Método para exportar el informe a Excel
         public IActionResult ExportarExcel()
         {
@@ -163,12 +172,12 @@ namespace ProyectoCatedra.Controllers
                 for (int i = 0; i < headers.Length; i++)
                 {
                     ws.Cells[1, i + 1].Value = headers[i];
-                    ws.Cells[1, i + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     ws.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(31, 78, 121));
                     ws.Cells[1, i + 1].Style.Font.Color.SetColor(System.Drawing.Color.White);
                     ws.Cells[1, i + 1].Style.Font.Bold = true;
-                    ws.Cells[1, i + 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    ws.Cells[1, i + 1].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                    ws.Cells[1, i + 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    ws.Cells[1, i + 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 }
 
                 // Datos
@@ -183,44 +192,18 @@ namespace ProyectoCatedra.Controllers
 
                     for (int col = 1; col <= 4; col++)
                     {
-                        ws.Cells[row, col].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                        ws.Cells[row, col].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                     }
-
                     row++;
                 }
 
                 ws.Cells.AutoFitColumns();
-
                 var stream = new MemoryStream();
                 excel.SaveAs(stream);
-                var content = stream.ToArray();
-                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Inventario.xlsx");
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Inventario.xlsx");
             }
         }
-        [HttpGet]
-        public IActionResult VenderProducto(int id, int cantidad)
-        {
-            var producto = _context.Productos.Find(id);
-            if (producto == null)
-                return NotFound();
 
-            if (cantidad <= 0 || cantidad > producto.Cantidad)
-            {
-                TempData["Error"] = "Cantidad no válida";
-                return RedirectToAction("Index");
-            }
-
-            producto.Cantidad -= cantidad;
-            _context.SaveChanges();
-
-            // Registrar movimiento de salida
-            RegistrarMovimiento(id, "Salida", cantidad, "Venta de producto");
-
-            var estadisticasController = new EstadisticasController(_context);
-            estadisticasController.RegistrarVenta(id, cantidad);
-
-            return RedirectToAction("Index");
-        }
         [HttpGet]
         public IActionResult Actualizar(int id)
         {
@@ -231,7 +214,123 @@ namespace ProyectoCatedra.Controllers
             }
             return View(producto);
         }
-    }
-} 
 
-    
+        
+
+        [HttpGet]
+        public IActionResult VenderProducto(int id, int cantidad, int? clienteId)
+        {
+            var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
+            if (producto == null || cantidad < 1)
+            {
+                return NotFound();
+            }
+
+            if (producto.Cantidad < cantidad)
+            {
+                TempData["Error"] = "No hay suficiente stock para realizar la venta.";
+                return RedirectToAction("Index");
+            }
+
+            // Restar la cantidad vendida al producto
+            producto.Cantidad -= cantidad;
+
+            var venta = new Venta
+            {
+                FechaVenta = DateTime.Now,
+                ClienteId = clienteId,
+                Detalles = new List<DetalleVenta>
+        {
+            new DetalleVenta
+            {
+                ProductoId = producto.Id,
+                Cantidad = cantidad,
+                PrecioUnitario = producto.Precio,
+                Subtotal = producto.Precio * cantidad
+            }
+        }
+            };
+
+            // Registrar el movimiento de salida
+            RegistrarMovimiento(producto.Id, "Venta", cantidad, "Venta realizada");
+
+            _context.Ventas.Add(venta);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult EditarCliente(int id)
+        {
+            var cliente = _context.Clientes.Find(id);
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+            return View(cliente);
+        }
+
+        [HttpPost]
+        public IActionResult EditarCliente(Cliente cliente)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Clientes.Update(cliente);
+                _context.SaveChanges();
+                TempData["Success"] = "Cliente actualizado exitosamente";
+                return RedirectToAction("ListaClientes");
+            }
+            return View(cliente);
+        }
+
+        [HttpGet]
+        public IActionResult EliminarCliente(int id)
+        {
+            var cliente = _context.Clientes.Find(id);
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+
+            var tieneVentas = _context.Ventas.Any(v => v.ClienteId == id);
+            if (tieneVentas)
+            {
+                TempData["Error"] = "No se puede eliminar el cliente porque tiene ventas asociadas.";
+                return RedirectToAction("ListaClientes");
+            }
+
+            _context.Clientes.Remove(cliente);
+            _context.SaveChanges();
+            TempData["Success"] = "Cliente eliminado exitosamente";
+            return RedirectToAction("ListaClientes");
+        }
+
+        [HttpGet]
+        public IActionResult ListaClientes()
+        {
+            var clientes = _context.Clientes.ToList();
+            return View(clientes);
+        }
+
+        [HttpGet]
+        public IActionResult RegistrarCliente()
+        {
+            return View(); 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RegistrarCliente(Cliente cliente)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Clientes.Add(cliente);
+                _context.SaveChanges();
+                TempData["Success"] = "Cliente registrado exitosamente";
+                return RedirectToAction("ListaClientes");
+            }
+            return View(cliente);
+        }
+    }
+}
