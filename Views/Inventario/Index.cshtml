@@ -4,10 +4,22 @@
         <li class="breadcrumb-item">
             <a asp-controller="Cuenta" asp-action="Inicio">Inicio</a>
         </li>
-        <li class="breadcrumb-item">Index</li>
+        <li class="breadcrumb-item">
+			<a asp-controller="Inventario" asp-action="Index">Index</a>
+		</li>
     </ol>
 </nav>
 <h2>Inventario</h2>
+<form method="get" asp-controller="Inventario" asp-action="Index">
+    <select name="categoria" class="form-select" onchange="this.form.submit()">
+        <option value="">-- Todas las categorías --</option>
+		@foreach (var cat in ViewBag.Categorias as List<string>)
+		{
+			bool isSelected = Context.Request.Query["categoria"] == cat;
+			<option value="@cat" selected="@(isSelected ? "selected" : null)">@cat</option>
+		}
+    </select>
+</form>
 @if (ViewBag.ProductosBajoStock.Count > 0)
 {
 	<div class="alert alert-warning">
@@ -30,6 +42,7 @@
 				<th>Id</th>
 				<th>Nombre</th>
 				<th>Cantidad</th>
+				<th>Categoría</th>
 				<th>Precio</th>
 				<th>Stock Mínimo</th>
 				<th>Accion</th>
@@ -43,6 +56,7 @@
 						<td>@producto.Id</td>
 						<td>@producto.Nombre</td>
 						<td>@producto.Cantidad</td>
+						<td>@producto.Categoria</td>
 						<td>@producto.Precio</td>
 						<td>@producto.StockMinimo</td>
 						<td>
@@ -54,6 +68,11 @@
 								<a type="button" class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
 								   style="width: 40px; height: 40px;" asp-action="Eliminar" asp-controller="Inventario" asp-route-id="@producto.Id" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
 									<i class="fa-solid fa-trash"></i>
+								</a>
+								<a type="button" class="btn btn-info btn-sm rounded-circle d-flex align-items-center justify-content-center"
+								   style="width: 40px; height: 40px;" asp-action="Producto" asp-controller="Historial"
+								   asp-route-id="@producto.Id" title="Ver Historial">
+									<i class="fa-solid fa-clock-rotate-left"></i>
 								</a>
 							</div>
 						</td>

@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoCatedra.Db;
 using ProyectoCatedra.Models;
-using System.Linq;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using OfficeOpenXml;
-using iText.Kernel.Font;
-using iText.IO.Font.Constants;
-using iText.Bouncycastle;
-using OfficeOpenXml.Style; // si usas estilos más adelante
 
 
 namespace ProyectoCatedra.Controllers
@@ -21,13 +16,41 @@ namespace ProyectoCatedra.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(string categoria)
         {
             var productos = _context.Productos.ToList();
             var productosBajoStock = productos.Where(p => p.Cantidad <= 10).ToList();
 
             ViewBag.ProductosBajoStock = productosBajoStock;
-            return View(productos);
+
+            var producto = string.IsNullOrEmpty(categoria)
+                ? _context.Productos.ToList()
+                : _context.Productos.Where(p => p.Categoria == categoria).ToList();
+
+            ViewBag.Categorias = _context.Productos
+                .Select(p => p.Categoria)
+                .Distinct()
+                .ToList();
+
+            return View(producto);
+        }
+
+        // Nuevo método para buscar productos
+        [HttpPost]
+        public IActionResult Buscar(string criterio)
+        {
+            // Si el campo de búsqueda está vacío, redirigimos a la página principal
+            if (string.IsNullOrWhiteSpace(criterio))
+            {
+                return RedirectToAction("Index", "Cuenta");
+            }
+            // Buscamos en la tabla Producto por nombre, código o categoría (ignorando mayúsculas)
+            var resultados = _context.Productos
+            .Where(p => p.Nombre.Contains(criterio) ||
+            p.Categoria.Contains(criterio))
+            .ToList();
+            // Enviamos los resultados a la vista ResultadosBusqueda
+            return View("ResultadosBusqueda", resultados);
         }
         public IActionResult Agregar() => View(new Producto());
 
@@ -38,9 +61,25 @@ namespace ProyectoCatedra.Controllers
             {
                 _context.Productos.Add(producto);
                 _context.SaveChanges();
+                RegistrarMovimiento(producto.Id, "Entrada", producto.Cantidad, "Entrada inicial de producto");
                 return RedirectToAction("Index");
             }
             return View(producto);
+        }
+        // Método auxiliar para registrar movimientos
+        private void RegistrarMovimiento(int productoId, string tipo, int cantidad, string comentario = "")
+        {
+            var movimiento = new HistorialMovimiento
+            {
+                ProductoId = productoId,
+                TipoMovimiento = tipo,
+                Cantidad = cantidad,
+                Usuario = HttpContext.Session.GetString("Usuario") ?? "Sistema",
+                Comentario = comentario
+            };
+
+            _context.HistorialMovimientos.Add(movimiento);
+            _context.SaveChanges();
         }
         public IActionResult Actualizar(int id)
         {
@@ -54,7 +93,21 @@ namespace ProyectoCatedra.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Productos.Update(producto);
+                var productoExistente = _context.Productos.Find(producto.Id);
+                if (productoExistente == null)
+                    return NotFound();
+
+                // Verificar si hubo cambio en la cantidad
+                if (productoExistente.Cantidad != producto.Cantidad)
+                {
+                    int diferencia = producto.Cantidad - productoExistente.Cantidad;
+                    string tipoMovimiento = diferencia > 0 ? "Ajuste (Entrada)" : "Ajuste (Salida)";
+                    string comentario = $"Ajuste de inventario. Cantidad anterior: {productoExistente.Cantidad}";
+
+                    RegistrarMovimiento(producto.Id, tipoMovimiento, Math.Abs(diferencia), comentario);
+                }
+
+                _context.Entry(productoExistente).CurrentValues.SetValues(producto);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -120,61 +173,29 @@ namespace ProyectoCatedra.Controllers
                 return File(ms.ToArray(), "application/pdf", "Informe_Inventario.pdf");
             }
         }
-        // Método para exportar el informe a Excel
-        public IActionResult ExportarExcel()
-        {
-            var productos = _context.Productos.ToList();
 
-            // ✅ Establecer licencia correctamente (EPPlus 8)
-            OfficeOpenXml.ExcelPackage.License.SetNonCommercialOrganization("Mi Organización");
-
-            using (ExcelPackage excel = new ExcelPackage())
-            {
-                ExcelWorksheet ws = excel.Workbook.Worksheets.Add("Inventario");
-
-                // Encabezados con estilo
-                string[] headers = { "ID", "Nombre", "Cantidad", "Precio" };
-                for (int i = 0; i < headers.Length; i++)
-                {
-                    ws.Cells[1, i + 1].Value = headers[i];
-                    ws.Cells[1, i + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                    ws.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(31, 78, 121));
-                    ws.Cells[1, i + 1].Style.Font.Color.SetColor(System.Drawing.Color.White);
-                    ws.Cells[1, i + 1].Style.Font.Bold = true;
-                    ws.Cells[1, i + 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    ws.Cells[1, i + 1].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                }
-
-                // Datos
-                int row = 2;
-                foreach (var producto in productos)
-                {
-                    ws.Cells[row, 1].Value = producto.Id;
-                    ws.Cells[row, 2].Value = producto.Nombre;
-                    ws.Cells[row, 3].Value = producto.Cantidad;
-                    ws.Cells[row, 4].Value = producto.Precio;
-                    ws.Cells[row, 4].Style.Numberformat.Format = "$#,##0.00";
-
-                    for (int col = 1; col <= 4; col++)
-                    {
-                        ws.Cells[row, col].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                    }
-
-                    row++;
-                }
-
-                ws.Cells.AutoFitColumns();
-
-                var stream = new MemoryStream();
-                excel.SaveAs(stream);
-                var content = stream.ToArray();
-                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Inventario.xlsx");
-            }
-        }
+        [HttpGet]
         public IActionResult VenderProducto(int id, int cantidad)
         {
+            var producto = _context.Productos.Find(id);
+            if (producto == null)
+                return NotFound();
+
+            if (cantidad <= 0 || cantidad > producto.Cantidad)
+            {
+                TempData["Error"] = "Cantidad no válida";
+                return RedirectToAction("Index");
+            }
+
+            producto.Cantidad -= cantidad;
+            _context.SaveChanges();
+
+            // Registrar movimiento de salida
+            RegistrarMovimiento(id, "Salida", cantidad, "Venta de producto");
+
             var estadisticasController = new EstadisticasController(_context);
             estadisticasController.RegistrarVenta(id, cantidad);
+
             return RedirectToAction("Index");
         }
     }

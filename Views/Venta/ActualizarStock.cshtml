@@ -1,0 +1,14 @@
+﻿@{
+	var productos = ViewBag.Productos as List<Producto>;
+}
+<h2>Actualizar Stock</h2>
+<form asp-action="ActualizarStock" method="post">
+	<select name="productoId">
+		@foreach (var p in productos)
+		{
+			<option value="@p.Id">@p.Nombre</option>
+		}
+	</select>
+	<input type="number" name="cantidad" placeholder="Cantidad" min="1" />
+	<button type="submit" class="btn btn-warning">Actualizar Stock</button>
+</form>

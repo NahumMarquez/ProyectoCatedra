@@ -1,0 +1,32 @@
+﻿@model List<ProyectoCatedra.Models.Producto>
+@{
+	ViewData["Title"] = "Resultados de Búsqueda";
+}
+<h2>Resultados de la Búsqueda</h2>
+@if (Model.Count == 0)
+{
+	<p>No se encontraron productos que coincidan con tu búsqueda.</p>
+}
+else
+{
+	<table class="table table-bordered mt-3">
+		<thead>
+			<tr>
+				<th>Nombre</th>
+				<th>Categoría</th>
+				<th>Precio</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var producto in Model)
+			{
+				<tr>
+					<td>@producto.Nombre</td>
+					<td>@producto.Categoria</td>
+					<td>@producto.Precio</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+<a href="@Url.Action("Inicio", "Cuenta")" class="btn btn-secondary mt-3">Volver</a>

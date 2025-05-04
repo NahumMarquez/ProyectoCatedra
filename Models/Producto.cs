@@ -15,6 +15,11 @@ namespace ProyectoCatedra.Models
         public int Ventas { get; set; } = 0;
         [Required]
         public int StockMinimo { get; set; }
+        [Required]
+        public string Categoria { get; set; }
+
+        [Range(0, 100, ErrorMessage = "El descuento debe estar entre 0 y 100")]
+        public int Descuento { get; set; } = 0; // en porcentaje
 
     }
 }

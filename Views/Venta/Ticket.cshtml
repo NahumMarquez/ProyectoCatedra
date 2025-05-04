@@ -1,0 +1,87 @@
+﻿@model ProyectoCatedra.Models.Venta
+
+@{
+    Layout = null; 
+    var total = Model.Total.ToString("0.00");
+}
+
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        margin: 20px;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .info {
+        margin-bottom: 15px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #333;
+        padding: 6px;
+        text-align: center;
+    }
+    th {
+        background-color: #eee;
+    }
+    .total {
+        margin-top: 15px;
+        text-align: right;
+        font-size: 16px;
+        font-weight: bold;
+    }
+</style>
+
+<h2>Ticket de Venta</h2>
+
+<div class="info">
+    <p><strong>Fecha:</strong> @Model.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
+    <p><strong>ID de Venta:</strong> #@Model.Id</p>
+</div>
+<h3>Datos del Cliente</h3>
+<p><strong>Nombre:</strong> @Model.NombreCliente</p>
+<p><strong>Teléfono:</strong> @Model.TelefonoCliente</p>
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio Original</th>
+            <th>Descuento (%)</th>
+            <th>Precio Final</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Detalles)
+        {
+            var precioOriginal = item.Producto.Precio;
+            var descuento = item.Producto.Descuento;
+            var precioFinal = item.PrecioUnitario;
+            var subtotal = precioFinal * item.Cantidad;
+
+            <tr>
+                <td>@item.Producto.Nombre</td>
+                <td>$@precioOriginal</td>
+                <td>@(descuento > 0 ? $"{descuento}%" : "-")</td>
+                <td>$@precioFinal.ToString("0.00")</td>
+                <td>@item.Cantidad</td>
+                <td>$@subtotal.ToString("0.00")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div class="total">
+    Total: $@total
+</div>

@@ -1,0 +1,63 @@
+﻿@model List<ProyectoCatedra.Models.HistorialMovimiento>
+
+@{
+    ViewData["Title"] = "Historial de Movimientos";
+    var producto = ViewBag.Producto as ProyectoCatedra.Models.Producto;
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Cuenta" asp-action="Inicio">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Inventario" asp-action="Index">Inventario</a>
+        </li>
+        <li class="breadcrumb-item active">Historial</li>
+    </ol>
+</nav>
+
+<h2>Historial de Movimientos</h2>
+<h4>Producto: @producto?.Nombre (ID: @producto?.Id)</h4>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Resumen</h5>
+                <p class="card-text">
+                    <strong>Stock actual:</strong> @producto?.Cantidad<br>
+                    <strong>Entradas totales:</strong> @Model.Where(m => m.TipoMovimiento.Contains("Entrada")).Sum(m => m.Cantidad)<br>
+                    <strong>Salidas totales:</strong> @Model.Where(m => m.TipoMovimiento.Contains("Salida")).Sum(m => m.Cantidad)
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Cantidad</th>
+            <th>Usuario</th>
+            <th>Comentario</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movimiento in Model)
+        {
+            <tr>
+                <td>@movimiento.FechaMovimiento.ToString("g")</td>
+                <td>@movimiento.TipoMovimiento</td>
+                <td class="@(movimiento.TipoMovimiento.Contains("Entrada") ? "text-success" : "text-danger")">
+                    @(movimiento.TipoMovimiento.Contains("Entrada") ? "+" : "-")@movimiento.Cantidad
+                </td>
+                <td>@movimiento.Usuario</td>
+                <td>@movimiento.Comentario</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Inventario" class="btn btn-primary">Volver al Inventario</a>

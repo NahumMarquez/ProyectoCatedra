@@ -41,7 +41,16 @@ namespace ProyectoCatedra.Controllers
             var usuario = _context.Empleados
                 .FirstOrDefault(e => e.Usuario == empleado.Usuario);
 
-            if (usuario == null || usuario.Contraseña != empleado.Contraseña)  // Aquí deberíamos comparar la contraseña encriptada
+            if (usuario == null)
+            {
+                ViewBag.Error = "Credenciales incorrectas.";
+                return View();
+            }
+
+            // Encriptar la contraseña ingresada para compararla con la guardada
+            string contraseñaEncriptada = HashPassword(empleado.Contraseña);
+
+            if (usuario.Contraseña != contraseñaEncriptada)
             {
                 ViewBag.Error = "Credenciales incorrectas.";
                 return View();
@@ -54,6 +63,7 @@ namespace ProyectoCatedra.Controllers
 
             return RedirectToAction("Inicio");
         }
+
 
         // Cerrar sesión
         public IActionResult Logout()
@@ -113,9 +123,10 @@ namespace ProyectoCatedra.Controllers
             {
                 SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587)
                 {
-                    Credentials = new NetworkCredential("ccabigail48@gmail.com", "le_vi2105"),
+                    Credentials = new NetworkCredential("ccabigail48@gmail.com", "vnvl tzoi xdut dewq"),
                     EnableSsl = true
                 };
+
 
                 MailMessage mensaje = new MailMessage
                 {
@@ -149,6 +160,8 @@ namespace ProyectoCatedra.Controllers
             {
                 return RedirectToAction("Login");
             }
+
+            ViewBag.Token = token;
             return View();
         }
 
@@ -190,13 +203,14 @@ namespace ProyectoCatedra.Controllers
             {
                 byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 StringBuilder builder = new StringBuilder();
-                foreach (byte b in bytes)
+                foreach (var b in bytes)
                 {
                     builder.Append(b.ToString("x2"));
                 }
                 return builder.ToString();
             }
         }
+
     }
 }
 

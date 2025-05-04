@@ -52,6 +52,8 @@ namespace ProyectoCatedra
                 name: "default",
                 pattern: "{controller=Cuenta}/{action=Login}/{id?}");
 
+            Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath, "Rotativa");
+
             app.Run();
         }
     }

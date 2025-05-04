@@ -1,10 +1,20 @@
-﻿@{
+﻿@model ProyectoCatedra.Models.Empleados
+@{
     ViewData["Title"] = "Inicio";
 }
 
 <div class="container text-center mt-5">
     <h2>Bienvenido al sistema</h2>
     <p>Has iniciado sesión correctamente.</p>
+    <!-- Formulario de búsqueda -->
+    <form asp-controller="Inventario" asp-action="Buscar" method="post" class="form-inline mt-3">
+        <div class="form-group">
+            <input type="text" name="criterio" class="form-control" placeholder="Buscar por nombre, código o categoría" required />
+        </div>
+        <button type="submit" class="btn btn-primary ml-2">Buscar</button>
+    </form>
+    <a href="/Venta/Crear" class="btn btn-success">Registrar Venta</a>
+    <a href="/Venta/ActualizarStock" class="btn btn-warning">Actualizar Stock</a>
     <a class="btn btn-primary" href="@Url.Action("Index", "Inventario")">Inventario</a>
     <a asp-controller="Inventario" asp-action="Informe" class="btn btn-primary">
         Generar
