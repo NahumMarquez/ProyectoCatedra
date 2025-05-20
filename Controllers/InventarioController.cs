@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoCatedra.Db;
 using ProyectoCatedra.Models;
 using iText.Kernel.Pdf;
@@ -184,7 +184,7 @@ namespace ProyectoCatedra.Controllers
             if (cantidad <= 0 || cantidad > producto.Cantidad)
             {
                 TempData["Error"] = "Cantidad no válida";
-                return RedirectToAction("Index");
+                return RedirectToAction("GenerarTicket", new { id = id, cantidad = cantidad });
             }
 
             producto.Cantidad -= cantidad;
@@ -198,6 +198,33 @@ namespace ProyectoCatedra.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public IActionResult GenerarTicket(int id, int cantidad)
+        {
+            var producto = _context.Productos.Find(id);
+            if (producto == null)
+                return NotFound();
+
+            using (var ms = new MemoryStream())
+            {
+                var writer = new PdfWriter(ms);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                document.Add(new Paragraph("Ticket de Compra").SetBold().SetFontSize(18));
+                document.Add(new Paragraph($"Fecha: {DateTime.Now}"));
+                document.Add(new Paragraph($"Producto: {producto.Nombre}"));
+                document.Add(new Paragraph($"Cantidad: {cantidad}"));
+                document.Add(new Paragraph($"Precio Unitario: ${producto.Precio}"));
+                document.Add(new Paragraph($"Total: ${producto.Precio * cantidad}"));
+                document.Add(new Paragraph("Gracias por su compra."));
+
+                document.Close();
+
+                return File(ms.ToArray(), "application/pdf", "Ticket_Compra.pdf");
+            }
+        }
+
     }
 }
 
