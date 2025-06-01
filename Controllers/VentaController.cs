@@ -16,12 +16,14 @@ public class VentaController : Controller
         return View();
     }
     [HttpPost]
-    public IActionResult Crear(List<int> productoIds, List<int> cantidades, string NombreCliente, string TelefonoCliente)
+    public IActionResult Crear(List<int> productoIds, List<int> cantidades, string NombreCliente, string TelefonoCliente, string TipoPago, string? NumeroReferencia)
     {
         var venta = new Venta
         {
             NombreCliente = NombreCliente,
             TelefonoCliente = TelefonoCliente,
+            TipoPago = TipoPago,
+            NumeroReferencia = NumeroReferencia,
             Detalles = new List<DetalleVenta>()
         };
 
@@ -59,7 +61,6 @@ public class VentaController : Controller
 
         return RedirectToAction("Ticket", new { id = venta.Id });
     }
-
 
 
     public IActionResult Ticket(int id)

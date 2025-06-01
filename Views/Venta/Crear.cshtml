@@ -23,10 +23,26 @@
 </div>
 
 <form asp-action="Crear" method="post">
-    <div class="form-group">
+    <div class="form-group mt-3">
+        <label for="tipoPago">Método de Pago</label>
+        <select name="TipoPago" id="tipoPago" class="form-control" required onchange="mostrarReferencia()">
+            <option value="">Seleccione un método</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta</option>
+            <option value="Transferencia">Transferencia</option>
+        </select>
+    </div>
+
+    <div class="form-group mt-2" id="refContainer" style="display:none;">
+        <label for="NumeroReferencia">Número de Autorización / Referencia</label>
+        <input type="text" name="NumeroReferencia" id="NumeroReferencia" class="form-control" />
+    </div>
+
+    <div class="form-group mt-3">
         <label>Nombre del Cliente</label>
         <input type="text" name="NombreCliente" class="form-control" required />
     </div>
+
     <div class="form-group">
         <label>Teléfono del Cliente</label>
         <input type="text" name="TelefonoCliente" class="form-control" required />
@@ -89,6 +105,18 @@
             document.getElementsByName("productoIds")[0].value = ids.join(",");
             document.getElementsByName("cantidades")[0].value = cantidades.join(",");
         }
+
+        function mostrarReferencia() {
+            const tipoPago = document.getElementById("tipoPago").value;
+            const refContainer = document.getElementById("refContainer");
+
+            if (tipoPago === "Tarjeta" || tipoPago === "Transferencia") {
+                refContainer.style.display = "block";
+                document.getElementById("NumeroReferencia").required = true;
+            } else {
+                refContainer.style.display = "none";
+                document.getElementById("NumeroReferencia").required = false;
+            }
+        }
     </script>
 }
-

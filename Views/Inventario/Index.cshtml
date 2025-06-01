@@ -74,6 +74,11 @@
 								   asp-route-id="@producto.Id" title="Ver Historial">
 									<i class="fa-solid fa-clock-rotate-left"></i>
 								</a>
+								<a type="button" class="btn btn-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" More actions
+								   style="width: 40px; height: 40px;" asp-action="GenerarTicket" asp-controller="Inventario"
+								   asp-route-id="@producto.Id" asp-route-cantidad="1" title="Imprimir Ticket">
+									<i class="fa-solid fa-receipt"></i>
+								</a>
 							</div>
 						</td>
 

@@ -1,0 +1,41 @@
+﻿@{
+	var ventas = ViewBag.Ventas as List<ProyectoCatedra.Models.Venta>;
+}
+<h2>Registrar Devolución</h2>
+<form asp-action="Registrar" method="post">
+	<div class="form-group">
+		<label>Venta:</label>
+		<select name="ventaId" class="form-control" id="ventaSelect" required>
+			<option value="">Seleccione una venta</option>
+			@foreach (var venta in ventas)
+			{
+				<option value="@venta.Id">
+					Venta #@venta.Id - Cliente:
+					@venta.NombreCliente
+				</option>
+			}
+		</select>
+	</div>
+	<div class="form-group">
+		<label>Producto:</label>
+		<select name="productoId" class="form-control" required>
+			@foreach (var venta in ventas)
+			{
+				foreach (var d in venta.Detalles)
+				{
+					<option value="@d.ProductoId">Venta #@venta.Id - @d.Producto.Nombre</option>
+				}
+			}
+		</select>
+	</div>
+	<div class="form-group">
+		<label>Cantidad a devolver:</label>
+		<input type="number" name="cantidadDevuelta" class="form-control" min="1" required />
+	</div>
+	<div class="form-group">
+		<label>Motivo:</label>
+		<input type="text" name="motivo" class="form-control" required />
+	</div>
+	<button type="submit" class="btn btn-danger">Procesar Devolución</button>
+</form>
+
