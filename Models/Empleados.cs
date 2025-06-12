@@ -17,5 +17,11 @@ namespace ProyectoCatedra.Models
 
         [Column("rol")]
         public string Rol { get; set; }
+        // NUEVOS CAMPOS AÑADIDOS
+        [Column("ultimo_cambio_contraseña")]
+        public DateTime UltimoCambioContraseña { get; set; } = DateTime.Now;
+
+        [Column("requiere_cambio_contraseña")]
+        public bool RequiereCambioContraseña { get; set; } = false;
     }
 }

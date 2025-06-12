@@ -105,10 +105,18 @@ namespace ProyectoCatedra.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("correo");
 
+                    b.Property<bool>("RequiereCambioContraseña")
+                        .HasColumnType("bit")
+                        .HasColumnName("requiere_cambio_contraseña");
+
                     b.Property<string>("Rol")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("rol");
+
+                    b.Property<DateTime>("UltimoCambioContraseña")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ultimo_cambio_contraseña");
 
                     b.Property<string>("Usuario")
                         .IsRequired()

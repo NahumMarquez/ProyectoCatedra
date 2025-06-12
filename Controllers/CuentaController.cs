@@ -6,10 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Http;
-
 
 namespace ProyectoCatedra.Controllers
 {
@@ -47,10 +44,8 @@ namespace ProyectoCatedra.Controllers
                 return View();
             }
 
-            // Encriptar la contraseña ingresada para compararla con la guardada
-            string contraseñaEncriptada = HashPassword(empleado.Contraseña);
-
-            if (usuario.Contraseña != contraseñaEncriptada)
+            // Comparar la contraseña directamente (sin encriptar)
+            if (usuario.Contraseña != empleado.Contraseña)
             {
                 ViewBag.Error = "Credenciales incorrectas.";
                 return View();
@@ -63,7 +58,6 @@ namespace ProyectoCatedra.Controllers
 
             return RedirectToAction("Inicio");
         }
-
 
         // Cerrar sesión
         public IActionResult Logout()
@@ -127,7 +121,6 @@ namespace ProyectoCatedra.Controllers
                     EnableSsl = true
                 };
 
-
                 MailMessage mensaje = new MailMessage
                 {
                     From = new MailAddress("ccabigail48@gmail.com"),
@@ -150,7 +143,6 @@ namespace ProyectoCatedra.Controllers
             ViewBag.Mensaje = "Se ha enviado un enlace de recuperación a tu correo.";
             return View();
         }
-
 
         // GET: Resetear contraseña
         public IActionResult Resetear(string token)
@@ -178,7 +170,7 @@ namespace ProyectoCatedra.Controllers
             var usuario = _context.Empleados.FirstOrDefault(e => e.Correo == registro.Email);
             if (usuario != null)
             {
-                usuario.Contraseña = HashPassword(nuevaContrasena); // Ahora encriptamos la contraseña
+                usuario.Contraseña = nuevaContrasena; // Guardar sin encriptar
                 _context.SaveChanges();
             }
 
@@ -188,29 +180,59 @@ namespace ProyectoCatedra.Controllers
         // Generar Token
         private string GenerarToken()
         {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] tokenBytes = new byte[16];
-                rng.GetBytes(tokenBytes);
-                return Convert.ToBase64String(tokenBytes);
-            }
+            var rng = new Random();
+            byte[] tokenBytes = new byte[16];
+            rng.NextBytes(tokenBytes);
+            return Convert.ToBase64String(tokenBytes);
         }
 
-        // Encriptar contraseña
-        private string HashPassword(string password)
+        // GET: Cambiar contraseña (voluntario) - Eliminamos la necesidad de contraseña actual
+        public IActionResult CambiarContraseña()
         {
-            using (SHA256 sha256 = SHA256.Create())
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("Usuario")))
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
+                return RedirectToAction("Login");
             }
+            return View();
         }
 
+        // POST: Cambiar contraseña (voluntario) - Eliminamos el parámetro contraseñaActual
+        [HttpPost]
+        public IActionResult CambiarContraseña(string nuevaContraseña, string confirmarContraseña)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("Usuario")))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var usuario = _context.Empleados
+                .FirstOrDefault(e => e.Usuario == HttpContext.Session.GetString("Usuario"));
+
+            if (usuario == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(nuevaContraseña) ||
+                string.IsNullOrWhiteSpace(confirmarContraseña))
+            {
+                ViewBag.Error = "Todos los campos son obligatorios.";
+                return View();
+            }
+
+            if (nuevaContraseña != confirmarContraseña)
+            {
+                ViewBag.Error = "Las contraseñas no coinciden.";
+                return View();
+            }
+
+            usuario.Contraseña = nuevaContraseña;
+            usuario.UltimoCambioContraseña = DateTime.Now;
+            usuario.RequiereCambioContraseña = false;
+            _context.SaveChanges();
+
+            ViewBag.Mensaje = "Contraseña cambiada con éxito.";
+            return View();
+        }
     }
 }
-

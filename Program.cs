@@ -29,7 +29,9 @@ namespace ProyectoCatedra
                         Usuario = "JefeFarmacia",
                         Correo = "ccabigail48@gmail.com",
                         Contraseña = "abigail", // Considera encriptar la contraseña
-                        Rol = "jefe"
+                        Rol = "jefe",
+                        UltimoCambioContraseña = DateTime.Now,
+                        RequiereCambioContraseña = false
                     });
                     context.SaveChanges();
                     Console.WriteLine("👤 Usuario 'admin' agregado a la base de datos.");
