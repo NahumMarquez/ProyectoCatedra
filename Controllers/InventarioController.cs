@@ -63,6 +63,7 @@ namespace ProyectoCatedra.Controllers
                 _context.Productos.Add(producto);
                 _context.SaveChanges();
                 RegistrarMovimiento(producto.Id, "Entrada", producto.Cantidad, "Entrada inicial de producto");
+                RegistrarHistorial($"Usuario creó el producto '{producto.Nombre}' con {producto.Cantidad} unidades");
                 return RedirectToAction("Index");
             }
             return View(producto);
@@ -110,6 +111,7 @@ namespace ProyectoCatedra.Controllers
 
                 _context.Entry(productoExistente).CurrentValues.SetValues(producto);
                 _context.SaveChanges();
+                RegistrarHistorial($"Usuario actualizó el producto '{producto.Nombre}' (ID: {producto.Id})");
                 return RedirectToAction("Index");
             }
             return View(producto);
@@ -123,6 +125,7 @@ namespace ProyectoCatedra.Controllers
 
             _context.Productos.Remove(producto);
             _context.SaveChanges();
+            RegistrarHistorial($"Usuario eliminó el producto '{producto.Nombre}' (ID: {producto.Id})");
 
             return RedirectToAction("Index");
         }
@@ -225,6 +228,19 @@ namespace ProyectoCatedra.Controllers
                 return File(ms.ToArray(), "application/pdf", "Ticket_Compra.pdf");
             }
         }
+
+        private void RegistrarHistorial(string accion)
+        {
+            var historial = new HistorialSistema
+            {
+                Usuario = HttpContext.Session.GetString("Usuario") ?? "Sistema",
+                Accion = accion
+            };
+
+            _context.HistorialSistema.Add(historial);
+            _context.SaveChanges();
+        }
+
     }
 }
 

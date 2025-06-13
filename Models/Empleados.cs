@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using iText.Forms.Xfdf;
 namespace ProyectoCatedra.Models
 {
     public class Empleados
@@ -17,5 +18,10 @@ namespace ProyectoCatedra.Models
 
         [Column("rol")]
         public string Rol { get; set; }
+        [Column("ultimo_cambio_contraseña")]
+        public DateTime UltimoCambioContraseña { get; set; } = DateTime.Now;
+
+        [Column("requiere_cambio_contraseña")]
+        public bool RequiereCambioContraseña { get; set; } = false;
     }
 }

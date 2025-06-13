@@ -1,0 +1,49 @@
+﻿@model List<ProyectoCatedra.Models.HistorialSistema>
+
+@{
+    ViewData["Title"] = "Historial del Sistema";
+}
+
+<h2>Historial del Sistema</h2>
+
+<form method="get" asp-action="Index">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Usuario</label>
+            <input type="text" name="usuario" class="form-control" value="@ViewBag.FiltroUsuario" placeholder="Nombre de usuario" />
+        </div>
+        <div class="col-md-3">
+            <label>Desde</label>
+            <input type="date" name="desde" class="form-control" value="@ViewBag.FiltroDesde?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3">
+            <label>Hasta</label>
+            <input type="date" name="hasta" class="form-control" value="@ViewBag.FiltroHasta?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Buscar</button>
+            <a asp-action="Index" class="btn btn-secondary me-2">Limpiar</a>
+            <a asp-action="ExportarPDF" asp-route-usuario="@ViewBag.FiltroUsuario" asp-route-desde="@ViewBag.FiltroDesde?.ToString("yyyy-MM-dd")" asp-route-hasta="@ViewBag.FiltroHasta?.ToString("yyyy-MM-dd")" class="btn btn-danger">PDF</a>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var h in Model)
+        {
+            <tr>
+                <td>@h.Fecha.ToString("g")</td>
+                <td>@h.Usuario</td>
+                <td>@h.Accion</td>
+            </tr>
+        }
+    </tbody>
+</table>

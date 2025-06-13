@@ -1,26 +1,54 @@
 ﻿@model ProyectoCatedra.Models.Empleados
 @{
-    ViewData["Title"] = "Inicio";
+	ViewData["Title"] = "Inicio";
 }
-
-<div class="container text-center mt-5">
-    <h2>Bienvenido al sistema</h2>
-    <p>Has iniciado sesión correctamente.</p>
-    <!-- Formulario de búsqueda -->
-    <form asp-controller="Inventario" asp-action="Buscar" method="post" class="form-inline mt-3">
-        <div class="form-group">
-            <input type="text" name="criterio" class="form-control" placeholder="Buscar por nombre, código o categoría" required />
-        </div>
-        <button type="submit" class="btn btn-primary ml-2">Buscar</button>
-    </form>
-    <a href="/Venta/Crear" class="btn btn-success">Registrar Venta</a>
-    <a href="/Venta/ActualizarStock" class="btn btn-warning">Actualizar Stock</a>
-    <a class="btn btn-primary" href="@Url.Action("Index", "Inventario")">Inventario</a>
-    <a asp-controller="Inventario" asp-action="Informe" class="btn btn-primary">
-        Generar
-        Informe
-    </a>
-    <a class="btn btn-info" href="@Url.Action("Index", "Estadisticas")">Ver Estadísticas</a>
-    <a href="/Cuenta/Login" class="btn btn-danger">Cerrar Sesión</a>
+<!-- Estilo adicional para fondo -->
+<style>
+	body {
+		background-color: #eafaf1;
+	}
+</style>
+<div class="container mt-5">
+	<div class="text-center mb-4">
+		<h2 class="text-success">Bienvenido al sistema</h2>
+		<p class="text-muted">Has iniciado sesión correctamente.</p>
+	</div>
+	<div class="row justify-content-center">
+		<!-- Buscador centrado -->
+		<div class="col-md-6 mb-4">
+			<div class="card shadow">
+				<div class="card-body text-center">
+					<form asp-controller="Inventario" asp-action="Buscar" method="post"
+						  class="form-inline justify-content-center">
+						<div class="form-group mb-2 w-75">
+							<input type="text" name="criterio" class="form-control w-100"
+								   placeholder="Buscar por nombre, código o categoría" required />
+						</div>
+						<button type="submit" class="btn btn-success mb-2 ml-2">Buscar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Botones a la derecha -->
+		<div class="col-md-4">
+			<div class="card shadow">
+				<div class="card-body d-flex flex-column">
+					<a href="/Venta/Crear" class="btn btn-success btn-block mb-2">
+						Registrar
+						Venta
+					</a>
+					<a href="/Venta/ActualizarStock" class="btn btn-warning btn-block mb-2">
+						Actualizar Stock
+					</a>
+					<a href="@Url.Action("Index", "Inventario")" class="btn btn-info btn-block mb-2">
+						Inventario
+					</a>
+					<a asp-controller="Inventario" asp-action="Informe" class="btn btn-secondary btnblock mb-2"> Generar Informe</a>
+					<a asp-controller="Devolucion" asp-action="Registrar" class="btn btn-warning btn-block mb-2">Registrar Devolución</a>
+					<a href="@Url.Action("Index", "Estadisticas")" class="btn btn-primary btn-block mb2"> Ver Estadísticas</a>
+					<a href="/Cuenta/Login" class="btn btn-danger btn-block"> Cerrar Sesión</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-

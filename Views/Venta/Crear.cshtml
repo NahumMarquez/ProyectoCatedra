@@ -1,65 +1,97 @@
 ﻿@model ProyectoCatedra.Models.Venta
 @{
+    ViewData["Title"] = "Registrar Venta";
     var productos = ViewBag.Productos as List<Producto>;
 }
 
-<h2>Registrar Venta</h2>
+<!-- Fondo personalizado -->
+<style>
+    body {
+        background-color: #eafaf1;
+    }
+</style>
 
-<div>
-    <label for="productoSelect">Producto:</label>
-    <select id="productoSelect" class="form-control">
-        @foreach (var producto in productos)
-        {
-            <option value="@producto.Id" data-nombre="@producto.Nombre" data-precio="@producto.Precio">
-                @producto.Nombre ($@producto.Precio)
-            </option>
-        }
-    </select>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg" style="max-width: 900px; margin: auto;">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="h5 mb-0">Registrar Venta</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Selección de productos -->
+                    <div class="form-group">
+                        <label for="productoSelect">Producto:</label>
+                        <select id="productoSelect" class="form-control">
+                            @foreach (var producto in productos)
+                            {
+                                <option value="@producto.Id" data-nombre="@producto.Nombre" data-precio="@producto.Precio">
+                                    @producto.Nombre ($@producto.Precio)
+                                </option>
+                            }
+                        </select>
+                    </div>
 
-    <label for="cantidadInput">Cantidad:</label>
-    <input type="number" id="cantidadInput" class="form-control" min="1" value="1" />
+                    <div class="form-group">
+                        <label for="cantidadInput">Cantidad:</label>
+                        <input type="number" id="cantidadInput" class="form-control" min="1" value="1" />
+                    </div>
 
-    <button type="button" class="btn btn-primary mt-2" onclick="agregarProducto()">Agregar</button>
+                    <div class="text-right mb-3">
+                        <button type="button" class="btn btn-primary" onclick="agregarProducto()">Agregar</button>
+                    </div>
+
+                    <!-- Formulario de venta -->
+                    <form asp-action="Crear" method="post">
+                        <div class="form-group">
+                            <label for="tipoPago">Método de Pago</label>
+                            <select name="TipoPago" id="tipoPago" class="form-control" required onchange="mostrarReferencia()">
+                                <option value="">Seleccione un método</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                                <option value="Transferencia">Transferencia</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="refContainer" style="display:none;">
+                            <label for="NumeroReferencia">Número de Autorización / Referencia</label>
+                            <input type="text" name="NumeroReferencia" id="NumeroReferencia" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nombre del Cliente</label>
+                            <input type="text" name="NombreCliente" class="form-control" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Teléfono del Cliente</label>
+                            <input type="text" name="TelefonoCliente" class="form-control" required />
+                        </div>
+
+                        <table class="table table-bordered mt-4">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaProductos"></tbody>
+                        </table>
+
+                        <input type="hidden" name="productoIds" />
+                        <input type="hidden" name="cantidades" />
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-sm px-3">Generar Ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<form asp-action="Crear" method="post">
-    <div class="form-group mt-3">
-        <label for="tipoPago">Método de Pago</label>
-        <select name="TipoPago" id="tipoPago" class="form-control" required onchange="mostrarReferencia()">
-            <option value="">Seleccione un método</option>
-            <option value="Efectivo">Efectivo</option>
-            <option value="Tarjeta">Tarjeta</option>
-            <option value="Transferencia">Transferencia</option>
-        </select>
-    </div>
-
-    <div class="form-group mt-2" id="refContainer" style="display:none;">
-        <label for="NumeroReferencia">Número de Autorización / Referencia</label>
-        <input type="text" name="NumeroReferencia" id="NumeroReferencia" class="form-control" />
-    </div>
-
-    <div class="form-group mt-3">
-        <label>Nombre del Cliente</label>
-        <input type="text" name="NombreCliente" class="form-control" required />
-    </div>
-
-    <div class="form-group">
-        <label>Teléfono del Cliente</label>
-        <input type="text" name="TelefonoCliente" class="form-control" required />
-    </div>
-
-    <table class="table mt-4">
-        <thead>
-            <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Acción</th></tr>
-        </thead>
-        <tbody id="tablaProductos"></tbody>
-    </table>
-
-    <input type="hidden" name="productoIds" />
-    <input type="hidden" name="cantidades" />
-
-    <button type="submit" class="btn btn-success">Generar Ticket</button>
-</form>
 
 @section Scripts {
     <script>

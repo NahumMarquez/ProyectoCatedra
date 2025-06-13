@@ -30,7 +30,7 @@ namespace ProyectoCatedra.Db
         public DbSet<Venta> Ventas { get; set; }
         public DbSet<DetalleVenta> DetallesVenta { get; set; }
         public DbSet<Devolucion> Devoluciones { get; set; }
-
+        public DbSet<HistorialSistema> HistorialSistema { get; set; }
 
     }
 }
