@@ -4,6 +4,167 @@
     var producto = ViewBag.Producto as ProyectoCatedra.Models.Producto;
 }
 
+<style>
+    body {
+        background: linear-gradient(to bottom right, #d4f4dd, #e8fff1);
+        font-family: 'Segoe UI', sans-serif;
+        color: #2c3e50;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    h2, h4 {
+        text-align: center;
+        margin-top: 20px;
+        font-weight: 700;
+        color: #247a4d;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    h4 {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid #34c38f;
+        transition: transform 0.3s ease;
+        margin-bottom: 25px;
+    }
+
+        .card:hover {
+            transform: scale(1.01);
+        }
+
+    .card-header {
+        background-color: #34c38f;
+        color: #fff;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 16px 16px 0 0;
+        text-align: center;
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .card-summary .card-title {
+        color: #247a4d;
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .card-summary .card-text {
+        text-align: center;
+        color: #2c3e50;
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+
+    .card-summary strong {
+        color: #247a4d;
+    }
+
+    .card-summary .text-success {
+        color: #34c38f;
+        font-weight: 500;
+    }
+
+    .card-summary .text-danger {
+        color: #f1556c;
+        font-weight: 500;
+    }
+
+    .table {
+        background-color: white !important; /* Fondo blanco para toda la tabla */
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table th {
+        background-color: #eafaf1 !important; /* Mantenemos el verde claro para los headers */
+        color: #247a4d;
+        font-weight: bold;
+        text-align: center;
+        padding: 12px 8px;
+    }
+
+    .table td {
+        background-color: white !important; /* Celdas con fondo blanco */
+        text-align: center;
+        padding: 10px 8px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f8f8 !important; /* Color más suave al hacer hover */
+    }
+
+
+    .table tbody tr:hover {
+        background-color: #f0fff5;
+    }
+
+    .text-success {
+        color: #34c38f !important;
+        font-weight: 500;
+    }
+
+    .text-danger {
+        color: #f1556c !important;
+        font-weight: 500;
+    }
+
+    .btn-return {
+        display: block;
+        margin: 30px auto 0;
+        padding: 8px 20px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        background-color: #34c38f;
+        color: #ffffff;
+        border: none;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        width: 100px;
+    }
+
+        .btn-return:hover {
+            background-color: #2eaa7b;
+        }
+
+    .breadcrumb {
+        background-color: rgba(255,255,255,0.8);
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .breadcrumb-item a {
+        color: #34c38f;
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: #247a4d;
+        font-weight: 500;
+    }
+</style>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
